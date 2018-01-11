@@ -30,14 +30,17 @@ def trending_words(bot, trigger):
     
     # Check if any overriding values were passed in the command, such that
     # the command is ".trending 24 10" 
-    supplied_hours = trigger.group(2)
-    supplied_words = trigger.group(3)
+    supplied_hw_combo = trigger.group(2)
+    supplied_values = supplied_hw_combo.split(" ")
+    
+    if len(supplied_values) > 2: 
+        say_error(bot, trigger.nick, "You may supply a maximum of 2 values for trending: '.trending <num-hours> <num-words>'. Using default values instead.")
+    else:
+        if supplied[0]:
+            cmd_hours = int(supplied[0])
 
-    if supplied_hours:
-        cmd_hours = int(supplied_hours)
-
-    if supplied_words:
-        cmd_words = int(supplied_words)
+        if supplied[1]:
+            cmd_words = int(supplied[1])
 
     api_resp = load_trending_words(cmd_hours, cmd_words)
     if api_resp.code == 200:
