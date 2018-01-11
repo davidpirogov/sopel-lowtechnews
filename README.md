@@ -11,7 +11,7 @@ sudo pip3 install sopel requests
 # Usage
 Check repository out to the Sopel repositories directory, symlink into enabled 
 
-Retrieve a value from [https://news.lowtech.io](#lowtech news) using:
+Retrieve a value from [lowtech news](https://news.lowtech.io) using:
 ```
 .n #800000
 ```
