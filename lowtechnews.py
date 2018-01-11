@@ -36,11 +36,11 @@ def trending_words(bot, trigger):
     if len(supplied_values) > 2: 
         say_error(bot, trigger.nick, "You may supply a maximum of 2 values for trending: '.trending <num-hours> <num-words>'. Using default values instead.")
     else:
-        if supplied[0]:
-            cmd_hours = int(supplied[0])
+        if supplied_values[0]:
+            cmd_hours = int(supplied_values[0])
 
-        if supplied[1]:
-            cmd_words = int(supplied[1])
+        if supplied_values[1]:
+            cmd_words = int(supplied_values[1])
 
     api_resp = load_trending_words(cmd_hours, cmd_words)
     if api_resp.code == 200:
