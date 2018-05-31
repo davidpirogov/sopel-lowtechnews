@@ -4,7 +4,7 @@ import urllib.parse
 
 baseUrl = "https://news.lowtech.io"
 apiUrl = "{}/api/v1".format(baseUrl)
-searchUrl = "{}/search.php?q=".format(baseUrl)
+searchUrl = "{}/search/".format(baseUrl)
 latest_max_results = 3
 trending_last_hours = 12
 trending_max_words = 10
