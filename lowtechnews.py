@@ -2,6 +2,7 @@ import sopel.module
 import requests
 import urllib.parse
 
+
 baseUrl = "https://news.lowtech.io"
 apiUrl = "{}/api/v1".format(baseUrl)
 searchUrl = "{}/search/".format(baseUrl)
@@ -23,19 +24,19 @@ class ApiResponse(object):
 @sopel.module.example('.trending', 'Gets a list of trending words from the news cycle in the last 12 hours and 15 words')
 def trending_words(bot, trigger):
     """Gets any over-riding values in the command group"""
-    
+
     # Set up the number of hours and words to pass to the API call
     cmd_hours = trending_last_hours
     cmd_words = trending_max_words
     supplied_values = []
 
     # Check if any overriding values were passed in the command, such that
-    # the command is ".trending 24 10" 
+    # the command is ".trending 24 10"
     supplied_hw_combo = trigger.group(2)
     if supplied_hw_combo != None:
         supplied_values = supplied_hw_combo.split(" ")
-    
-    if len(supplied_values) > 2: 
+
+    if len(supplied_values) > 2:
         say_error(bot, trigger.nick, "You may supply a maximum of 2 values for trending: '.trending <num-hours> <num-words>'. Using default values instead.")
     else:
         if len(supplied_values) >= 1:
@@ -47,14 +48,14 @@ def trending_words(bot, trigger):
     api_resp = load_trending_words(cmd_hours, cmd_words)
     if api_resp.code == 200:
         words = api_resp.payload;
-        if len(words) > 0: 
-            say_words(bot, trigger.nick, cmd_hours, cmd_words, words) 
-        else: 
+        if len(words) > 0:
+            say_words(bot, trigger.nick, cmd_hours, cmd_words, words)
+        else:
             say_error(bot, trigger.nick, "No words were returned for your trending 'number of hours' and 'number of words' range")
     else:
         say_error(bot, trigger.nick, api_resp.metadata["message"])
 
-    
+
 
 @sopel.module.commands('n')
 @sopel.module.example('.n', 'Gets a list of news items from lowtech news')
@@ -111,13 +112,13 @@ def load_list(initial_offset, number_of_entries):
     return parse_news_api_response(requests.get(apiLoadListUrl))
 
 def load_search_result(search_term):
-    apiGetSearchResult = "{}{}/{}".format(apiUrl, "/search", search_term)
+    apiGetSearchResult = "{}{}/{}".format(apiUrl, "/search", urllib.parse.quote(search_term))
     return parse_news_api_response(requests.get(apiGetSearchResult))
 
 def load_trending_words(cmd_hours, cmd_words):
     apiLoadTrendingUrl = "{}{}?num_hours={}&num_words={}".format(apiUrl, "/info/word-cloud", cmd_hours, cmd_words)
-    return parse_news_api_response(requests.get(apiLoadTrendingUrl)) 
-    
+    return parse_news_api_response(requests.get(apiLoadTrendingUrl))
+
 def parse_news_api_response(api_response):
     """ Gets a list of news entries from a json response """
     payload_key = "payload"
@@ -125,25 +126,38 @@ def parse_news_api_response(api_response):
     message_key = "message"
     code_key = "code"
 
-    news = api_response.json()
-    code = 500
-    message = "Unknown response"
+    news = None
+    code = 200
+    message = "Okay"
     payload = {}
     metadata = {}
 
-    if payload_key in news:
-        payload = news[payload_key]
-
-    if metadata_key in news:
-        metadata = news[metadata_key]
-
-    if code_key in news:
-        code = news[code_key]
-
-    if message_key in metadata:
-        message = metadata[message_key]
+    if api_response.status_code == 200:
+        try:
+            news = api_response.json()
+        except json.decoder.JSONDecodeError:
+            messaage = "Could not decode response"
+            code = 500
+            news = None
     else:
-        metadata[message_key] = message
+        code = api_response.status_code
+        message = api.response.text
+
+    if news is not None:
+
+        if payload_key in news:
+            payload = news[payload_key]
+
+        if metadata_key in news:
+            metadata = news[metadata_key]
+
+        if code_key in news:
+            code = news[code_key]
+
+        if message_key in metadata:
+            message = metadata[message_key]
+        else:
+            metadata[message_key] = message
 
     return ApiResponse(code, message, payload, metadata)
 
@@ -157,7 +171,7 @@ def say_entry(bot, entry):
     bot.say(response_text)
 
 def format_words(words_array):
-    """ Extracts the word value from the dictionary and inserts into an array for further use """ 
+    """ Extracts the word value from the dictionary and inserts into an array for further use """
     words = []
     for i in range(len(words_array)):
         words.append(words_array[i]["word"])
@@ -179,7 +193,7 @@ def say_error(bot, nick, entry):
 
 
 if __name__ == "__main__":
-    
+
     # Test the API loading up a specific identifier
     specific_id = "424347"
     print("Looking up '{}':".format(specific_id))
@@ -211,6 +225,6 @@ if __name__ == "__main__":
         print("\t {}".format(words))
     else:
         print(result)
-    
+
 
 
