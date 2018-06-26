@@ -141,7 +141,7 @@ def parse_news_api_response(api_response):
             news = None
     else:
         code = api_response.status_code
-        message = api.response.text
+        message = api_response.text
 
     if news is not None:
 
