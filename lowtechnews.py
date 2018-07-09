@@ -78,7 +78,7 @@ def news_list(bot, trigger):
             if "message" not in api_resp.metadata:
                 error_message = error_message.format(api_resp.code, "Could not retrieve entry")
             else:
-                error_message = error_message.format(api_resp.code, api_resp.metadata["message"]:
+                error_message = error_message.format(api_resp.code, api_resp.metadata["message"])
                                                      
             say_error(bot, trigger.nick, error_message)
     else:
