@@ -66,7 +66,7 @@ def news_list(bot, trigger):
     if cmd and cmd[:1] == "#":
         # Identifies that we are looking for a specific entry id and
         # looks up that id
-        api_resp = load_specific(cmd[1:])
+        api_resp = load_specific(cmd[1:].strip())
         if api_resp.code == 200:
             entries = api_resp.payload["results"]
             if len(entries) > 0:
@@ -74,7 +74,13 @@ def news_list(bot, trigger):
             else:
                 say_error(bot, trigger.nick, "The specific ID '{}' was not found".format(cmd[1:]))
         else:
-            say_error(bot, trigger.nick, api_resp.metadata["message"])
+            error_message = "Error {}: {}"
+            if "message" not in api_resp.metadata:
+                error_message = error_message.format(api_resp.code, "Could not retrieve entry")
+            else
+                error_message = error_message.format(api_resp.code, api_resp.metadata["message"]:
+                                                     
+            say_error(bot, trigger.nick, error_message)
     else:
         # Does a search based on the supplied term against the API
         api_resp = load_search_result(cmd)
