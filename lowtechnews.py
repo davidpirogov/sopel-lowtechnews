@@ -173,7 +173,7 @@ def say_info(bot, info_text):
 
 def say_entry(bot, entry):
     """ Outputs the entry in standard form to the IRC channel """
-    response_text = "#{}: {} {}".format(entry["id"], entry["title"], entry["href"])
+    response_text = "#{} ({}): {} {}".format(entry["id"], entry["date_added"], entry["title"], entry["href"])
     bot.say(response_text)
 
 def format_words(words_array):
