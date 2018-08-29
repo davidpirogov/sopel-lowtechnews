@@ -2,10 +2,10 @@
 \#lowtech news module for Sopel IRC bot
 
 # Installation
-Tested on Ubuntu 16.04 LTS. Requires python 3.5
+Tested on Ubuntu 16.04 LTS. Requires python 3.5, requests, and [dateparser](https://dateparser.readthedocs.io/en/latest/)
 
 ```bash
-sudo pip3 install sopel requests
+sudo pip3 install sopel requests dateparser
 ```
 
 # Usage
