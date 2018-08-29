@@ -1,7 +1,7 @@
 import sopel.module
 import requests
 import urllib.parse
-
+from datetime import datetime as dt
 
 baseUrl = "https://news.lowtech.io"
 apiUrl = "{}/api/v1".format(baseUrl)
@@ -173,7 +173,8 @@ def say_info(bot, info_text):
 
 def say_entry(bot, entry):
     """ Outputs the entry in standard form to the IRC channel """
-    response_text = "#{} ({}): {} {}".format(entry["id"], entry["date_added"], entry["title"], entry["href"])
+    entry_date = get_date(entry)
+    response_text = "#{} ({}): {} {}".format(entry["id"], entry_date.strftime("%Y-%m-%d"), entry["title"], entry["href"])
     bot.say(response_text)
 
 def format_words(words_array):
@@ -197,6 +198,11 @@ def say_error(bot, nick, entry):
     response_text = "{}: Error => {}".format(nick, entry)
     bot.say(response_text)
 
+def get_date(entry):
+    """ Parses the entry if there is a date_added value and returns a datetime object"""
+    entry_date = None
+    if "date_added" in entry:
+        entry_date = dt.strptime(entry["date_added"], "%Y-%m-%d %H:%M:%S")
 
 if __name__ == "__main__":
 
