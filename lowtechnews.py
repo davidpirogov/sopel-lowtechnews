@@ -207,6 +207,8 @@ def get_date(entry):
     if "date_added" in entry:
         entry_date = dt.strptime(entry["date_added"], "%Y-%m-%d %H:%M:%S")
 
+    return entry_date
+        
 if __name__ == "__main__":
 
     # Test the API loading up a specific identifier
