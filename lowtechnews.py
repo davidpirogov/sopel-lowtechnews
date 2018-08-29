@@ -174,7 +174,10 @@ def say_info(bot, info_text):
 def say_entry(bot, entry):
     """ Outputs the entry in standard form to the IRC channel """
     entry_date = get_date(entry)
-    response_text = "#{} ({}): {} {}".format(entry["id"], entry_date.strftime("%Y-%m-%d"), entry["title"], entry["href"])
+    if entry_date is None:
+        response_text = "#{}: {} {}".format(entry["id"], entry["title"], entry["href"])        
+    else:
+        response_text = "#{} ({}): {} {}".format(entry["id"], entry_date.strftime("%Y-%m-%d"), entry["title"], entry["href"])
     bot.say(response_text)
 
 def format_words(words_array):
@@ -212,6 +215,8 @@ if __name__ == "__main__":
     result = load_specific(specific_id)
     if result.code == 200:
         print("Successfully loaded #{}".format(specific_id))
+        entry_date = get_date(result.payload["results"][0])
+        print("\t Date: {}".format(entry_date.strftime("%Y-%m-%d"))
         print("\t {}...".format(str(result)[:120]))
     else:
         print(result)
