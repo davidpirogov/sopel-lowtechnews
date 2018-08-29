@@ -216,7 +216,7 @@ if __name__ == "__main__":
     if result.code == 200:
         print("Successfully loaded #{}".format(specific_id))
         entry_date = get_date(result.payload["results"][0])
-        print("\t Date: {}".format(entry_date.strftime("%Y-%m-%d"))
+        print("\t Date: {}".format(entry_date.strftime("%Y-%m-%d")))
         print("\t {}...".format(str(result)[:120]))
     else:
         print(result)
