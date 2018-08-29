@@ -2,6 +2,7 @@ import sopel.module
 import requests
 import urllib.parse
 from datetime import datetime as dt
+import dateparser
 
 baseUrl = "https://news.lowtech.io"
 apiUrl = "{}/api/v1".format(baseUrl)
@@ -205,7 +206,7 @@ def get_date(entry):
     """ Parses the entry if there is a date_added value and returns a datetime object"""
     entry_date = None
     if "date_added" in entry:
-        entry_date = dt.strptime(entry["date_added"], "%Y-%m-%d %H:%M:%S")
+        entry_date = dateparser.parse(entry["date_added"])
 
     return entry_date
         
