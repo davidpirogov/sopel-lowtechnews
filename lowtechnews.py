@@ -35,7 +35,7 @@ def trending_words(bot, trigger):
     # the command is ".trending 24 10"
     supplied_hw_combo = trigger.group(2)
     if supplied_hw_combo != None:
-        supplied_values = supplied_hw_combo.split(" ")
+        supplied_values = supplied_hw_combo.strip().split(" ")
 
     if len(supplied_values) > 2:
         say_error(bot, trigger.nick, "You may supply a maximum of 2 values for trending: '.trending <num-hours> <num-words>'. Using default values instead.")
