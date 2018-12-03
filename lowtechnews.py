@@ -8,8 +8,8 @@ baseUrl = "https://news.lowtech.io"
 apiUrl = "{}/api/v1".format(baseUrl)
 searchUrl = "{}/search/".format(baseUrl)
 latest_max_results = 3
-trending_last_hours = 12
-trending_max_words = 10
+trending_last_hours = 24
+trending_max_words = 20
 
 class ApiResponse(object):
         def __init__(self, code, message, payload=None, metadata=None):
