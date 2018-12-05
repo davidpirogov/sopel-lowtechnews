@@ -3,6 +3,7 @@ import requests
 import urllib.parse
 from datetime import datetime as dt
 import dateparser
+import json
 
 baseUrl = "https://news.lowtech.io"
 apiUrl = "{}/api/v1".format(baseUrl)
@@ -106,6 +107,34 @@ def news_list(bot, trigger):
             say_error(bot, trigger.nick, api_resp.metadata["message"])
 
 
+@sopel.module.commands('v', 'vote')
+@sopel.module.example('.v', 'Votes a certain topic up or down')
+def vote_topic(bot, trigger):
+    """Votes a topic up or down on lowtech.io"""
+
+    supplied_words = []
+    supplied_text = trigger.group(2)
+    if supplied_text != None:
+        supplied_words = supplied_text.strip().split(" ")
+
+    topic_error_text = "You need to supply topic(s) and end with the term 'up' or 'down' to register: '.vote <topic(s)> [up|down]'"
+    if len(supplied_words) < 2:
+        say_error(bot, trigger.nick, topic_error_text)
+    else:
+        # Check that the last word is one of two specific words
+        voting_word = str(supplied_words[-1]).lower()
+        if voting_word not in ["up", "down"]: 
+            say_error(bot, trigger.nick, topic_error_text)
+        else: 
+            topics = supplied_words[:-1] 
+            payload = {"vote":voting_word,"topics":topics,"nick":trigger.nick,"user":trigger.user}
+            api_resp = post_vote_registration(payload)
+            if api_resp.code == 200:
+                say_info(bot, "{}: {}".format(trigger.nick, api_resp.metadata["message"]))
+            else:
+                say_error(bot, trigger.nick, api_resp.metadata["message"])
+            
+
 
 # ------- SUPPORT FUNCTIONS ------------
 def load_specific(entry_id):
@@ -126,6 +155,10 @@ def load_trending_words(cmd_hours, cmd_words):
     apiLoadTrendingUrl = "{}{}?num_hours={}&num_words={}".format(apiUrl, "/info/word-cloud", cmd_hours, cmd_words)
     return parse_news_api_response(requests.get(apiLoadTrendingUrl))
 
+def post_vote_registration(payload):
+    voteRegistrationUrl = "{}{}".format(apiUrl, "/vote")
+    return parse_news_api_response(requests.post(voteRegistrationUrl, json=payload))
+
 def parse_news_api_response(api_response):
     """ Gets a list of news entries from a json response """
     payload_key = "payload"
@@ -133,38 +166,34 @@ def parse_news_api_response(api_response):
     message_key = "message"
     code_key = "code"
 
-    news = None
+    response = None
     code = 200
     message = "Okay"
     payload = {}
     metadata = {}
 
-    if api_response.status_code == 200:
-        try:
-            news = api_response.json()
-        except json.decoder.JSONDecodeError:
-            messaage = "Could not decode response"
-            code = 500
-            news = None
-    else:
+    try:
+        response = api_response.json()
+    except json.decoder.JSONDecodeError:
+        response = None
         code = api_response.status_code
         message = api_response.text
 
-    if news is not None:
+    if response is not None:
 
-        if payload_key in news:
-            payload = news[payload_key]
+        if payload_key in response:
+            payload = response[payload_key]
 
-        if metadata_key in news:
-            metadata = news[metadata_key]
+        if metadata_key in response:
+            metadata = response[metadata_key]
 
-        if code_key in news:
-            code = news[code_key]
+        if code_key in response:
+            code = response[code_key]
 
-        if message_key in metadata:
-            message = metadata[message_key]
-        else:
-            metadata[message_key] = message
+    if message_key in metadata:
+        message = metadata[message_key]
+    else:
+        metadata[message_key] = message
 
     return ApiResponse(code, message, payload, metadata)
 
@@ -246,5 +275,5 @@ if __name__ == "__main__":
     else:
         print(result)
 
-
+            
 
