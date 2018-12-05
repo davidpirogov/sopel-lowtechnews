@@ -108,7 +108,7 @@ def news_list(bot, trigger):
 
 
 @sopel.module.commands('v', 'vote')
-@sopel.module.example('.v', 'Votes a certain topic up or down')
+@sopel.module.example('.v list of topics up', 'Votes a certain topic up or down. Supply a space-separated list of topic(s) and end with the term 'up' or 'down' to register: '.vote <topic(s)> [up|down]')
 def vote_topic(bot, trigger):
     """Votes a topic up or down on lowtech.io"""
 
